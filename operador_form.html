@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Operador - ENTELCO</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.85);
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --blue-deep: #0b3c91;
+            --blue-main: #1e6bff;
+            --blue-light: #60a5fa;
+            --blue-glow: rgba(30, 107, 255, 0.3);
+            --blue-subtle: rgba(30, 107, 255, 0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-blue: rgba(30, 107, 255, 0.2);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(30, 107, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 107, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(30, 107, 255, 0.12), transparent 70%);
+            top: -200px;
+            right: -100px;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(11, 60, 145, 0.1), transparent 70%);
+            bottom: -150px;
+            left: -100px;
+            animation: orbFloat 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* ===== SPLASH ===== */
+
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #050810;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #splashCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .splash-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .splash-content.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .splash-card {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border-blue);
+            border-radius: 32px;
+            padding: 50px 60px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 100px var(--blue-glow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 600px;
+        }
+
+        .splash-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 34px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.3), rgba(0, 51, 160, 0.3) 40%, rgba(204, 0, 0, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .splash-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 150px rgba(30, 107, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .splash-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--blue-main), var(--blue-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            margin: 0 auto 24px;
+            box-shadow: 0 12px 40px rgba(30, 107, 255, 0.3);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .splash-card:hover .splash-icon {
+            transform: scale(1.1) rotateY(180deg);
+        }
+
+        .splash-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+        }
+
+        .splash-title span {
+            background: linear-gradient(135deg, var(--blue-light), #93c5fd, var(--blue-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .splash-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .splash-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-main));
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 10px 30px rgba(30, 107, 255, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .splash-cta i {
+            transition: transform 0.3s ease;
+        }
+
+        .splash-card:hover .splash-cta i {
+            transform: translateX(4px);
+        }
+
+        /* ===== LOGIN ===== */
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .login-info {
+            flex: 1;
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.2s;
+        }
+
+        .login-info.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .login-info-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(30, 107, 255, 0.15), rgba(30, 107, 255, 0.05));
+            border: 1px solid var(--border-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: var(--blue-light);
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(30, 107, 255, 0.15);
+        }
+
+        .login-info h2 {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .login-info h2 span {
+            background: linear-gradient(135deg, var(--blue-light), var(--blue-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-info p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 400px;
+        }
+
+        .login-features {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .login-feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-feature:hover {
+            border-color: var(--border-blue);
+            background: var(--blue-subtle);
+        }
+
+        .login-feature i {
+            color: var(--blue-light);
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .login-feature span {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .login-card {
+            width: 440px;
+            padding: 50px;
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 80px var(--blue-glow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.4s;
+        }
+
+        .login-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 33px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(30, 107, 255, 0.3), transparent 50%, rgba(30, 107, 255, 0.1));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .logo-area {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .logo-item {
+            width: 76px;
+            height: 76px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(30, 107, 255, 0.15), rgba(30, 107, 255, 0.05));
+            border: 1px solid var(--border-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: var(--blue-light);
+            box-shadow: 0 8px 32px rgba(30, 107, 255, 0.15);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .logo-item:nth-child(2) { animation-delay: 0.5s; }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(30, 107, 255, 0.15); }
+            50% { box-shadow: 0 8px 40px rgba(30, 107, 255, 0.3); }
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .form-control-dark {
+            height: 56px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            margin-bottom: 18px;
+            padding-left: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-control-dark::placeholder { color: var(--text-muted); }
+
+        .form-control-dark:focus {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 4px var(--blue-glow), 0 0 30px rgba(30, 107, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 58px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-main));
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 12px 30px rgba(30, 107, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .btn-login:hover::before { transform: translateX(100%); }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 40px rgba(30, 107, 255, 0.4);
+        }
+
+        /* ===== FORM LAYOUT ===== */
+
+        .form-page {
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            padding: 30px;
+            display: none;
+        }
+
+        .form-page.active {
+            display: block;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: panelSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes panelSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, var(--blue-main), var(--blue-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(30, 107, 255, 0.25);
+        }
+
+        .form-header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-header h1 span {
+            background: linear-gradient(135deg, var(--blue-light), #93c5fd, var(--blue-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Progress Steps */
+
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step.active {
+            background: var(--blue-subtle);
+            border-color: var(--border-blue);
+        }
+
+        .step.completed {
+            background: var(--success-bg);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-num {
+            background: var(--blue-main);
+            color: white;
+        }
+
+        .step.completed .step-num {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .step.active .step-label { color: var(--text-primary); }
+        .step.completed .step-label { color: var(--success); }
+
+        /* Form Sections */
+
+        .form-section {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: panelSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 26px;
+            padding: 36px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+        }
+
+        .form-panel-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-panel-title i {
+            color: var(--blue-light);
+            font-size: 22px;
+        }
+
+        .form-panel-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row.triple {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .req {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-input {
+            height: 50px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 0 16px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-input::placeholder { color: var(--text-muted); }
+
+        .form-input:focus {
+            border-color: var(--blue-main);
+            box-shadow: 0 0 0 3px var(--blue-glow);
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+        }
+
+        textarea.form-input {
+            height: auto;
+            min-height: 100px;
+            padding: 14px 16px;
+            resize: vertical;
+        }
+
+        select.form-input {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        select.form-input option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Navigation Buttons */
+
+        .form-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            gap: 16px;
+        }
+
+        .btn-nav {
+            padding: 14px 32px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            transform: translateX(-3px);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-main));
+            color: white;
+            box-shadow: 0 8px 24px rgba(30, 107, 255, 0.25);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 107, 255, 0.35);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.35);
+        }
+
+        /* Success Screen */
+
+        .success-screen {
+            display: none;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-screen.active {
+            display: flex;
+        }
+
+        .success-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 32px;
+            padding: 60px;
+            text-align: center;
+            max-width: 550px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4), 0 0 100px var(--blue-glow);
+            animation: panelSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), #4ade80);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            margin: 0 auto 28px;
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.3);
+            animation: successBounce 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes successBounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-card h2 {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .success-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .success-ref {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 16px 24px;
+            margin-bottom: 28px;
+        }
+
+        .success-ref-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .success-ref-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--blue-light);
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-new {
+            padding: 14px 32px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-main));
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(30, 107, 255, 0.25);
+        }
+
+        .btn-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(30, 107, 255, 0.35);
+        }
+
+        /* Responsive */
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .form-row.triple { grid-template-columns: 1fr; }
+            .form-panel { padding: 24px; }
+            .progress-steps { gap: 6px; }
+            .step { padding: 10px 14px; }
+            .step-label { display: none; }
+            .login-wrapper { flex-direction: column; gap: 40px; }
+            .login-info { text-align: center; }
+            .login-card { width: 100%; padding: 30px; }
+            .splash-card { padding: 30px 40px; margin: 0 20px; }
+            .splash-title { font-size: 22px; }
+            .form-page { padding: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <!-- SPLASH -->
+
+    <div class="splash-screen" id="splashScreen">
+        <canvas id="splashCanvas"></canvas>
+        <div class="splash-content" id="splashContent">
+            <div class="splash-card" id="splashCard">
+                <div class="splash-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+                <div class="splash-title">
+                    Formulario de<br>
+                    <span>Registro de Operador</span>
+                </div>
+                <div class="splash-subtitle">
+                    Ente Nacional de Telecomunicaciones
+                </div>
+                <div class="splash-cta">
+                    Comenzar Registro
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+
+    <section class="login-page" id="loginView" style="display:none">
+        <div class="login-wrapper">
+            <div class="login-info" id="loginInfo">
+                <div class="login-info-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+                <h2>Registro de<br><span>Operador</span></h2>
+                <p>Complete el formulario con los datos de su empresa de telecomunicaciones. Toda la información es confidencial y será tratada según la normativa vigente.</p>
+                <div class="login-features">
+                    <div class="login-feature">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Formulario de 5 pasos - aproximadamente 10 minutos</span>
+                    </div>
+                    <div class="login-feature">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Guardado automático de progreso</span>
+                    </div>
+                    <div class="login-feature">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Datos protegidos y encriptados</span>
+                    </div>
+                </div>
+            </div>
+            <div class="login-card" id="loginCard">
+                <div class="logo-area">
+                    <div class="logo-item"><i class="fa-solid fa-file-pen"></i></div>
+                    <div class="logo-item"><i class="fa-solid fa-tower-broadcast"></i></div>
+                </div>
+                <h1 class="login-title">Acceso al Formulario</h1>
+                <p class="login-subtitle">Ingrese sus credenciales para continuar</p>
+                <input type="text" class="form-control-dark" id="loginUser" placeholder="Usuario o RIF">
+                <input type="password" class="form-control-dark" id="loginPass" placeholder="Contraseña">
+                <button class="btn-login" id="loginBtn">
+                    <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>
+                    Ingresar
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FORM -->
+
+    <section class="form-page" id="formView">
+
+        <div class="form-header">
+            <div class="form-header-icon">
+                <i class="fa-solid fa-file-pen"></i>
+            </div>
+            <h1>Registro de <span>Operador</span></h1>
+            <p>Complete todos los campos requeridos para el registro institucional</p>
+        </div>
+
+        <div class="progress-steps" id="progressSteps">
+            <div class="step active" data-step="1">
+                <div class="step-num">1</div>
+                <div class="step-label">Datos del Operador</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-num">2</div>
+                <div class="step-label">Ubicación</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-num">3</div>
+                <div class="step-label">Representante</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-num">4</div>
+                <div class="step-label">Operatividad</div>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-num">5</div>
+                <div class="step-label">Confirmación</div>
+            </div>
+        </div>
+
+        <!-- STEP 1: Datos del Operador -->
+
+        <div class="form-section active" id="step1">
+            <div class="form-panel">
+                <div class="form-panel-title">
+                    <i class="fa-solid fa-building"></i>
+                    Datos del Operador
+                </div>
+                <div class="form-panel-desc">Información básica de identificación de la empresa</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>RIF <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="rif" placeholder="J-12345678-9">
+                        <span class="form-hint">Formato: J-00000000-0</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Comercial <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="nombreComercial" placeholder="Radio Caracas Plus">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Razón Social <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="razonSocial" placeholder="Radio Caracas Plus C.A.">
+                    </div>
+                    <div class="form-group">
+                        <label>Vertiente <span class="req">*</span></label>
+                        <select class="form-input" id="vertiente">
+                            <option value="">Seleccione...</option>
+                            <option>Radio AM</option>
+                            <option>Radio FM</option>
+                            <option>Televisión Abierta</option>
+                            <option>Televisión por Suscripción</option>
+                            <option>Internet / ISP</option>
+                            <option>Telefonía Fija</option>
+                            <option>Telefonía Móvil</option>
+                            <option>Satélite</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Frecuencia / Canal</label>
+                        <input type="text" class="form-input" id="frecuencia" placeholder="98.7 FM / Canal 8">
+                    </div>
+                    <div class="form-group">
+                        <label>Sitio Web</label>
+                        <input type="url" class="form-input" id="sitioWeb" placeholder="www.ejemplo.ve">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <div></div>
+                <button class="btn-nav btn-next" onclick="goToStep(2)">
+                    Siguiente
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Ubicación -->
+
+        <div class="form-section" id="step2">
+            <div class="form-panel">
+                <div class="form-panel-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Ubicación Geográfica
+                </div>
+                <div class="form-panel-desc">Datos de localización del operador</div>
+
+                <div class="form-row triple">
+                    <div class="form-group">
+                        <label>Estado <span class="req">*</span></label>
+                        <select class="form-input" id="estado">
+                            <option value="">Seleccione...</option>
+                            <option>Amazonas</option>
+                            <option>Anzoátegui</option>
+                            <option>Apure</option>
+                            <option>Aragua</option>
+                            <option>Barinas</option>
+                            <option>Bolívar</option>
+                            <option>Carabobo</option>
+                            <option>Cojedes</option>
+                            <option>Delta Amacuro</option>
+                            <option>Distrito Capital</option>
+                            <option>Falcón</option>
+                            <option>Guárico</option>
+                            <option>La Guaira</option>
+                            <option>Lara</option>
+                            <option>Mérida</option>
+                            <option>Miranda</option>
+                            <option>Monagas</option>
+                            <option>Nueva Esparta</option>
+                            <option>Portuguesa</option>
+                            <option>Sucre</option>
+                            <option>Táchira</option>
+                            <option>Trujillo</option>
+                            <option>Yaracuy</option>
+                            <option>Zulia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Municipio <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="municipio" placeholder="Sucre">
+                    </div>
+                    <div class="form-group">
+                        <label>Parroquia</label>
+                        <input type="text" class="form-input" id="parroquia" placeholder="Petare">
+                    </div>
+                </div>
+
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label>Dirección Fiscal <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="direccion" placeholder="Av. Principal, Edificio Torre, Piso 5, Oficina 501">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <input type="text" class="form-input" id="codigoPostal" placeholder="1010">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono de Oficina</label>
+                        <input type="tel" class="form-input" id="telOficina" placeholder="0212-1234567">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <button class="btn-nav btn-prev" onclick="goToStep(1)">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Anterior
+                </button>
+                <button class="btn-nav btn-next" onclick="goToStep(3)">
+                    Siguiente
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Representante -->
+
+        <div class="form-section" id="step3">
+            <div class="form-panel">
+                <div class="form-panel-title">
+                    <i class="fa-solid fa-user-tie"></i>
+                    Representante Legal
+                </div>
+                <div class="form-panel-desc">Datos del representante legal de la empresa</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre Completo <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="repNombre" placeholder="María González">
+                    </div>
+                    <div class="form-group">
+                        <label>Cédula de Identidad <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="repCedula" placeholder="V-12345678">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cargo <span class="req">*</span></label>
+                        <select class="form-input" id="repCargo">
+                            <option value="">Seleccione...</option>
+                            <option>Presidente</option>
+                            <option>Director General</option>
+                            <option>Gerente General</option>
+                            <option>Director de Operaciones</option>
+                            <option>Apoderado</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono Celular <span class="req">*</span></label>
+                        <input type="tel" class="form-input" id="repTelefono" placeholder="0414-1234567">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Correo Electrónico <span class="req">*</span></label>
+                        <input type="email" class="form-input" id="repEmail" placeholder="contacto@empresa.ve">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono de Oficina</label>
+                        <input type="tel" class="form-input" id="repTelOficina" placeholder="0212-1234567">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <button class="btn-nav btn-prev" onclick="goToStep(2)">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Anterior
+                </button>
+                <button class="btn-nav btn-next" onclick="goToStep(4)">
+                    Siguiente
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Operatividad -->
+
+        <div class="form-section" id="step4">
+            <div class="form-panel">
+                <div class="form-panel-title">
+                    <i class="fa-solid fa-signal"></i>
+                    Datos de Operatividad
+                </div>
+                <div class="form-panel-desc">Información sobre el estado operativo y técnico del operador</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estado de Operatividad <span class="req">*</span></label>
+                        <select class="form-input" id="operatividad">
+                            <option value="">Seleccione...</option>
+                            <option>Operativo - Funcionamiento normal</option>
+                            <option>Operativo - Con restricciones</option>
+                            <option>Temporalmente inactivo</option>
+                            <option>En mantenimiento</option>
+                            <option>Cerrado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado de Licencia <span class="req">*</span></label>
+                        <select class="form-input" id="licencia">
+                            <option value="">Seleccione...</option>
+                            <option>Vigente</option>
+                            <option>Por vencer (menos de 6 meses)</option>
+                            <option>Vencida</option>
+                            <option>En trámite de renovación</option>
+                            <option>Sin licencia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Vencimiento de Licencia</label>
+                        <input type="date" class="form-input" id="fechaVencimiento">
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Licencia</label>
+                        <input type="text" class="form-input" id="numLicencia" placeholder="LIC-2024-00123">
+                    </div>
+                </div>
+
+                <div class="form-row triple">
+                    <div class="form-group">
+                        <label>Número de Empleados</label>
+                        <input type="number" class="form-input" id="numEmpleados" placeholder="45">
+                    </div>
+                    <div class="form-group">
+                        <label>Ingresos Mensuales (Bs.)</label>
+                        <input type="text" class="form-input" id="ingresos" placeholder="125,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Audiencia Estimada</label>
+                        <input type="text" class="form-input" id="audiencia" placeholder="35,000 oyentes">
+                    </div>
+                </div>
+
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label>Necesidades del Medio / Observaciones</label>
+                        <textarea class="form-input" id="necesidades" placeholder="Describa las necesidades actuales de su medio o cualquier observación relevante..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <button class="btn-nav btn-prev" onclick="goToStep(3)">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Anterior
+                </button>
+                <button class="btn-nav btn-next" onclick="goToStep(5)">
+                    Siguiente
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Confirmación -->
+
+        <div class="form-section" id="step5">
+            <div class="form-panel">
+                <div class="form-panel-title">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    Confirmación y Envío
+                </div>
+                <div class="form-panel-desc">Revise los datos antes de enviar el formulario</div>
+
+                <div id="summaryContent"></div>
+
+                <div class="form-row single" style="margin-top: 24px;">
+                    <div class="form-group">
+                        <label>Declaración Jurada <span class="req">*</span></label>
+                        <div style="display:flex; align-items:flex-start; gap:12px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle); border-radius:14px;">
+                            <input type="checkbox" id="declaracion" style="margin-top:4px; width:18px; height:18px; accent-color:var(--blue-main);">
+                            <label for="declaracion" style="font-size:13px; color:var(--text-secondary); text-transform:none; letter-spacing:normal; font-weight:400; line-height:1.5;">
+                                Declaro bajo juramento que la información proporcionada es verídica y me comprometo a actualizarla ante cualquier cambio. Entiendo que la falsedad de datos puede acarrear sanciones según la Ley Orgánica de Telecomunicaciones.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <button class="btn-nav btn-prev" onclick="goToStep(4)">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Anterior
+                </button>
+                <button class="btn-nav btn-submit" onclick="submitForm()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Enviar Formulario
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- SUCCESS -->
+
+    <section class="success-screen" id="successView">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2>¡Registro Exitoso! NIVEL CAMBUR Y PEO SUPERADO</h2>
+            <p>Su formulario ha sido enviado correctamente. Nuestro equipo revisará la información y se comunicará con usted en un plazo de 5 días hábiles.</p>
+            <div class="success-ref">
+                <div class="success-ref-label">Número de Referencia</div>
+                <div class="success-ref-value" id="refNumber">ENT-2026-00000</div>
+            </div>
+            <button class="btn-new" onclick="newForm()">
+                <i class="fa-solid fa-plus me-2"></i>
+                Nuevo Registro
+            </button>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        // ===== SPLASH ANIMATION =====
+
+        var splashCanvas = document.getElementById('splashCanvas');
+        var ctx = splashCanvas.getContext('2d');
+        var W, H;
+        var t = 0;
+        var towerH = 0;
+        var towerTarget = 0;
+        var animId = null;
+        var dismissed = false;
+
+        var starsArr = [];
+        var shootArr = [];
+        var bldArr = [];
+        var partArr = [];
+        var cloudArr = [];
+        var lightArr = [];
+        var fogArr = [];
+        var waveArr = [];
+        var avilaPts = [];
+
+        function init() {
+            W = splashCanvas.width = window.innerWidth;
+            H = splashCanvas.height = window.innerHeight;
+
+            starsArr = [];
+            for (var i = 0; i < 250; i++) {
+                starsArr.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H * 0.5,
+                    s: Math.random() * 2 + 0.5,
+                    tw: Math.random() * Math.PI * 2,
+                    sp: Math.random() * 0.03 + 0.01,
+                    w: Math.random() > 0.7
+                });
+            }
+
+            shootArr = [];
+            for (var i = 0; i < 3; i++) {
+                shootArr.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H * 0.2,
+                    len: 60 + Math.random() * 50,
+                    sp: 3 + Math.random() * 2,
+                    ang: 0.2 + Math.random() * 0.1,
+                    op: 0,
+                    on: false,
+                    tm: Math.random() * 300 + 100
+                });
+            }
+
+            avilaPts = [];
+            var baseY = H * 0.62;
+            for (var i = 0; i <= 80; i++) {
+                var x = (i / 80) * W;
+                var nx = i / 80;
+                var shape = Math.sin(nx * Math.PI) * 120;
+                var noise = Math.sin(i * 0.8) * 12 + Math.sin(i * 1.7) * 8 + Math.sin(i * 3.1) * 4;
+                avilaPts.push({ x: x, y: baseY - shape - noise });
+            }
+
+            bldArr = [];
+            var gY = H * 0.76;
+            var bx = -10;
+            while (bx < W + 30) {
+                var r = Math.random();
+                var h, w;
+                if (r < 0.12) { h = 100 + Math.random() * 80; w = 20 + Math.random() * 15; }
+                else if (r < 0.4) { h = 50 + Math.random() * 60; w = 25 + Math.random() * 20; }
+                else { h = 25 + Math.random() * 40; w = 18 + Math.random() * 25; }
+                bldArr.push({
+                    x: bx, w: w, h: h, gY: gY,
+                    ant: h > 80 && Math.random() > 0.5,
+                    antH: 10 + Math.random() * 15,
+                    bp: Math.random() * Math.PI * 2
+                });
+                bx += w + 2 + Math.random() * 6;
+            }
+
+            lightArr = [];
+            for (var i = 0; i < 80; i++) {
+                lightArr.push({
+                    x: Math.random() * W,
+                    y: gY - Math.random() * 100,
+                    s: 1 + Math.random() * 2,
+                    ph: Math.random() * Math.PI * 2,
+                    sp: 0.02 + Math.random() * 0.04,
+                    w: Math.random() > 0.5
+                });
+            }
+
+            cloudArr = [];
+            for (var i = 0; i < 5; i++) {
+                cloudArr.push({
+                    x: Math.random() * W * 1.3 - W * 0.15,
+                    y: H * 0.1 + Math.random() * H * 0.2,
+                    w: 120 + Math.random() * 150,
+                    h: 25 + Math.random() * 30,
+                    sp: 0.1 + Math.random() * 0.12,
+                    op: 0.04 + Math.random() * 0.04
+                });
+            }
+
+            fogArr = [];
+            for (var i = 0; i < 25; i++) {
+                fogArr.push({
+                    x: Math.random() * W,
+                    y: gY - 10 + Math.random() * 25,
+                    s: 25 + Math.random() * 45,
+                    sp: 0.15 + Math.random() * 0.2,
+                    op: 0.02 + Math.random() * 0.025,
+                    ph: Math.random() * Math.PI * 2
+                });
+            }
+
+            waveArr = [];
+            for (var i = 0; i < 8; i++) {
+                waveArr.push({ maxR: 180 + Math.random() * 120, delay: i * 0.35 });
+            }
+
+            partArr = [];
+            for (var i = 0; i < 50; i++) {
+                partArr.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.12,
+                    vy: -Math.random() * 0.18 - 0.04,
+                    s: 1 + Math.random() * 1.5,
+                    ph: Math.random() * Math.PI * 2
+                });
+            }
+
+            towerH = 0;
+            towerTarget = 0;
+        }
+
+        function drawSky() {
+            var g = ctx.createLinearGradient(0, 0, 0, H);
+            g.addColorStop(0, '#010308');
+            g.addColorStop(0.3, '#030815');
+            g.addColorStop(0.55, '#0a1a35');
+            g.addColorStop(0.75, '#0d2847');
+            g.addColorStop(0.9, '#153560');
+            g.addColorStop(1, '#1a3a6a');
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, W, H);
+            var hg = ctx.createRadialGradient(W * 0.5, H * 0.7, 0, W * 0.5, H * 0.7, W * 0.4);
+            hg.addColorStop(0, 'rgba(30,80,150,0.06)');
+            hg.addColorStop(1, 'transparent');
+            ctx.fillStyle = hg;
+            ctx.fillRect(0, H * 0.4, W, H * 0.4);
+        }
+
+        function drawStars() {
+            for (var i = 0; i < starsArr.length; i++) {
+                var s = starsArr[i];
+                s.tw += s.sp;
+                var a = 0.3 + Math.sin(s.tw) * 0.3;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.s, 0, Math.PI * 2);
+                ctx.fillStyle = s.w ? 'rgba(255,230,200,' + a + ')' : 'rgba(180,210,255,' + a + ')';
+                ctx.fill();
+            }
+        }
+
+        function drawShoot() {
+            for (var i = 0; i < shootArr.length; i++) {
+                var ss = shootArr[i];
+                ss.tm--;
+                if (ss.tm <= 0 && !ss.on) {
+                    ss.on = true;
+                    ss.x = Math.random() * W * 0.6;
+                    ss.y = Math.random() * H * 0.2;
+                    ss.op = 0.8;
+                    ss.tm = 200 + Math.random() * 400;
+                }
+                if (ss.on) {
+                    ss.x += Math.cos(ss.ang) * ss.sp;
+                    ss.y += Math.sin(ss.ang) * ss.sp;
+                    ss.op -= 0.012;
+                    if (ss.op > 0) {
+                        var tx = ss.x - Math.cos(ss.ang) * ss.len;
+                        var ty = ss.y - Math.sin(ss.ang) * ss.len;
+                        var g = ctx.createLinearGradient(tx, ty, ss.x, ss.y);
+                        g.addColorStop(0, 'transparent');
+                        g.addColorStop(1, 'rgba(255,255,255,' + ss.op + ')');
+                        ctx.beginPath();
+                        ctx.moveTo(tx, ty);
+                        ctx.lineTo(ss.x, ss.y);
+                        ctx.strokeStyle = g;
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    } else {
+                        ss.on = false;
+                    }
+                }
+            }
+        }
+
+        function drawClouds() {
+            for (var i = 0; i < cloudArr.length; i++) {
+                var c = cloudArr[i];
+                c.x += c.sp;
+                if (c.x > W + c.w) c.x = -c.w;
+                ctx.save();
+                ctx.globalAlpha = c.op;
+                ctx.fillStyle = 'rgba(100,140,200,0.5)';
+                ctx.beginPath();
+                ctx.ellipse(c.x, c.y, c.w * 0.5, c.h * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(c.x - c.w * 0.2, c.y + c.h * 0.1, c.w * 0.3, c.h * 0.4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(c.x + c.w * 0.25, c.y - c.h * 0.05, c.w * 0.25, c.h * 0.35, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function drawAvila() {
+            var fade = Math.min(1, t / 1.0);
+            if (fade <= 0 || avilaPts.length === 0) return;
+
+            ctx.save();
+            ctx.globalAlpha = fade * 0.4;
+            ctx.beginPath();
+            ctx.moveTo(-10, H);
+            for (var i = 0; i < avilaPts.length; i++) {
+                if (i === 0) ctx.moveTo(avilaPts[i].x - 5, avilaPts[i].y + 25);
+                else ctx.lineTo(avilaPts[i].x - 5, avilaPts[i].y + 25);
+            }
+            ctx.lineTo(W + 10, H);
+            ctx.closePath();
+            ctx.fillStyle = '#152040';
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.globalAlpha = fade * 0.6;
+            ctx.beginPath();
+            ctx.moveTo(-10, H);
+            for (var i = 0; i < avilaPts.length; i++) {
+                if (i === 0) ctx.moveTo(avilaPts[i].x, avilaPts[i].y + 10);
+                else ctx.lineTo(avilaPts[i].x, avilaPts[i].y + 10);
+            }
+            ctx.lineTo(W + 10, H);
+            ctx.closePath();
+            ctx.fillStyle = '#0f1830';
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.globalAlpha = fade * 0.9;
+            ctx.beginPath();
+            ctx.moveTo(-10, H);
+            for (var i = 0; i < avilaPts.length; i++) {
+                if (i === 0) ctx.moveTo(avilaPts[i].x, avilaPts[i].y);
+                else ctx.lineTo(avilaPts[i].x, avilaPts[i].y);
+            }
+            ctx.lineTo(W + 10, H);
+            ctx.closePath();
+            var mg = ctx.createLinearGradient(0, H * 0.4, 0, H);
+            mg.addColorStop(0, '#0a1020');
+            mg.addColorStop(1, '#050810');
+            ctx.fillStyle = mg;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(30,80,150,0.1)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.restore();
+
+            var hazeY = H * 0.52;
+            var hg = ctx.createLinearGradient(0, hazeY - 20, 0, hazeY + 30);
+            hg.addColorStop(0, 'transparent');
+            hg.addColorStop(0.5, 'rgba(20,40,80,' + (fade * 0.12) + ')');
+            hg.addColorStop(1, 'transparent');
+            ctx.fillStyle = hg;
+            ctx.fillRect(0, hazeY - 20, W, 50);
+        }
+
+        function drawCity() {
+            var fade = Math.min(1, (t - 0.3) / 1.0);
+            if (fade <= 0 || bldArr.length === 0) return;
+
+            var gY = H * 0.76;
+
+            var gg = ctx.createLinearGradient(0, gY - 5, 0, H);
+            gg.addColorStop(0, '#0a1525');
+            gg.addColorStop(0.5, '#080f1c');
+            gg.addColorStop(1, '#050810');
+            ctx.fillStyle = gg;
+            ctx.fillRect(0, gY - 3, W, H - gY + 3);
+
+            for (var b = 0; b < bldArr.length; b++) {
+                var bd = bldArr[b];
+                var by = bd.gY - bd.h;
+
+                var bg = ctx.createLinearGradient(bd.x, by, bd.x, bd.gY);
+                bg.addColorStop(0, '#12203a');
+                bg.addColorStop(1, '#050810');
+                ctx.fillStyle = bg;
+                ctx.fillRect(bd.x, by, bd.w, bd.h);
+
+                ctx.fillStyle = 'rgba(40,90,160,0.12)';
+                ctx.fillRect(bd.x, by, bd.w, 1.5);
+
+                var cols = Math.max(1, Math.floor(bd.w / 8));
+                var rows = Math.max(1, Math.floor(bd.h / 12));
+                var ww = 3, wh = 5;
+                var gx = bd.w / (cols + 1);
+                var gy = bd.h / (rows + 1);
+
+                for (var ry = 0; ry < rows; ry++) {
+                    for (var cx = 0; cx < cols; cx++) {
+                        var lit = Math.sin(cx * 3.7 + ry * 2.3 + bd.x * 0.01) > -0.3;
+                        if (lit) {
+                            var fl = Math.sin(t * 2 + cx + ry * 0.5) * 0.08;
+                            var warm = Math.sin(cx * 1.5 + ry * 2.1 + bd.x) > 0;
+                            var a = 0.12 + fl;
+                            ctx.fillStyle = warm ? 'rgba(255,210,120,' + a + ')' : 'rgba(120,180,255,' + a + ')';
+                            ctx.fillRect(
+                                bd.x + gx * (cx + 0.5) - ww / 2,
+                                by + gy * (ry + 0.5) - wh / 2,
+                                ww, wh
+                            );
+                        }
+                    }
+                }
+
+                if (bd.ant) {
+                    var ax = bd.x + bd.w / 2;
+                    ctx.strokeStyle = 'rgba(60,100,160,0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(ax, by);
+                    ctx.lineTo(ax, by - bd.antH);
+                    ctx.stroke();
+                    var blink = Math.sin(t * 3 + bd.bp) > 0.5;
+                    if (blink) {
+                        ctx.beginPath();
+                        ctx.arc(ax, by - bd.antH, 2, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255,50,50,0.8)';
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.arc(ax, by - bd.antH, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255,50,50,0.15)';
+                        ctx.fill();
+                    }
+                }
+            }
+
+            for (var i = 0; i < lightArr.length; i++) {
+                var cl = lightArr[i];
+                cl.ph += cl.sp;
+                var a = 0.3 * (0.5 + Math.sin(cl.ph) * 0.5);
+                ctx.beginPath();
+                ctx.arc(cl.x, cl.y, cl.s, 0, Math.PI * 2);
+                ctx.fillStyle = cl.w ? 'rgba(255,200,100,' + a + ')' : 'rgba(100,180,255,' + a + ')';
+                ctx.fill();
+            }
+
+            var ug = ctx.createLinearGradient(0, gY - 60, 0, gY + 60);
+            ug.addColorStop(0, 'rgba(255,204,0,0.025)');
+            ug.addColorStop(0.35, 'rgba(0,51,160,0.025)');
+            ug.addColorStop(0.65, 'rgba(204,0,0,0.025)');
+            ug.addColorStop(1, 'transparent');
+            ctx.fillStyle = ug;
+            ctx.fillRect(0, gY - 60, W, 120);
+        }
+
+        function drawFog() {
+            for (var i = 0; i < fogArr.length; i++) {
+                var f = fogArr[i];
+                f.x += f.sp;
+                f.ph += 0.008;
+                f.y += Math.sin(f.ph) * 0.2;
+                if (f.x > W + f.s) f.x = -f.s;
+                ctx.save();
+                ctx.globalAlpha = f.op;
+                var fg = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.s);
+                fg.addColorStop(0, 'rgba(40,60,100,0.3)');
+                fg.addColorStop(1, 'transparent');
+                ctx.fillStyle = fg;
+                ctx.fillRect(f.x - f.s, f.y - f.s / 2, f.s * 2, f.s);
+                ctx.restore();
+            }
+        }
+
+        function drawTower() {
+            var tx = W * 0.5;
+            var peakIdx = Math.floor(avilaPts.length / 2);
+            var peakY = avilaPts[peakIdx] ? avilaPts[peakIdx].y : H * 0.5;
+            var baseY = peakY + 5;
+            var maxH = 180;
+
+            towerTarget = Math.min(maxH, Math.max(0, (t - 1.5) * 45));
+            towerH += (towerTarget - towerH) * 0.04;
+
+            if (towerH < 2) return;
+
+            var topY = baseY - towerH;
+            var mastH = 20;
+
+            var ag = ctx.createRadialGradient(tx, topY, 0, tx, topY, 80);
+            ag.addColorStop(0, 'rgba(30,107,255,0.12)');
+            ag.addColorStop(1, 'transparent');
+            ctx.fillStyle = ag;
+            ctx.fillRect(tx - 80, topY - 80, 160, 160);
+
+            var segs = Math.floor(towerH / 12);
+            var bw = 16, tw = 3;
+
+            ctx.strokeStyle = 'rgba(80,140,220,0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(tx - bw, baseY);
+            ctx.lineTo(tx - tw, topY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(tx + bw, baseY);
+            ctx.lineTo(tx + tw, topY);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(100,160,240,0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(tx, baseY);
+            ctx.lineTo(tx, topY);
+            ctx.stroke();
+
+            for (var i = 0; i < segs; i++) {
+                var y1 = baseY - i * 12;
+                var y2 = baseY - (i + 1) * 12;
+                var p1 = i / segs, p2 = (i + 1) / segs;
+                var w1 = bw - (bw - tw) * p1;
+                var w2 = bw - (bw - tw) * p2;
+
+                ctx.beginPath();
+                ctx.moveTo(tx - w1, y1);
+                ctx.lineTo(tx + w1, y1);
+                ctx.strokeStyle = 'rgba(70,130,200,0.3)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                if (i < segs - 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(tx - w1, y1);
+                    ctx.lineTo(tx + w2, y2);
+                    ctx.moveTo(tx + w1, y1);
+                    ctx.lineTo(tx - w2, y2);
+                    ctx.strokeStyle = 'rgba(70,130,200,0.2)';
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(tx, topY);
+            ctx.lineTo(tx, topY - mastH);
+            ctx.strokeStyle = 'rgba(120,180,255,0.7)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(tx, topY - mastH, 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#60a5fa';
+            ctx.fill();
+
+            var blink = Math.sin(t * 4) > 0.3;
+            if (blink) {
+                ctx.beginPath();
+                ctx.arc(tx, topY - mastH, 3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,40,40,0.9)';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(tx, topY - mastH, 12, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,40,40,0.15)';
+                ctx.fill();
+            }
+
+            var pulse = 0.5 + Math.sin(t * 3) * 0.3;
+            ctx.beginPath();
+            ctx.arc(tx, topY - mastH, 6 + pulse * 4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(96,165,250,' + (pulse * 0.15) + ')';
+            ctx.fill();
+
+            if (towerH > 30) {
+                var wf = Math.min(1, (towerH - 30) / 30);
+                ctx.save();
+                ctx.globalAlpha = wf;
+                for (var i = 0; i < waveArr.length; i++) {
+                    var w = waveArr[i];
+                    var age = ((t + w.delay) % 3);
+                    var r = age * w.maxR / 3;
+                    var o = Math.max(0, 0.5 - age * 0.14);
+                    if (o > 0 && r > 5) {
+                        var progress = age / 3;
+                        var cr, cg, cb;
+                        if (progress < 0.33) {
+                            var p = progress / 0.33;
+                            cr = Math.round(255 * (1 - p));
+                            cg = Math.round(204 * (1 - p) + 51 * p);
+                            cb = Math.round(160 * p);
+                        } else if (progress < 0.66) {
+                            var p = (progress - 0.33) / 0.33;
+                            cr = Math.round(204 * p);
+                            cg = Math.round(51 * (1 - p));
+                            cb = Math.round(160 * (1 - p));
+                        } else {
+                            var p = (progress - 0.66) / 0.34;
+                            cr = Math.round(204 * (1 - p));
+                            cg = 0;
+                            cb = 0;
+                        }
+                        ctx.beginPath();
+                        ctx.arc(tx, topY - mastH, r, -Math.PI * 0.7, -Math.PI * 0.15);
+                        ctx.strokeStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + o + ')';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(tx, topY - mastH, r, Math.PI * 0.15, Math.PI * 0.7);
+                        ctx.strokeStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + o + ')';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                }
+                var ba = 0.02 + Math.sin(t * 2) * 0.015;
+                var bg = ctx.createLinearGradient(tx, topY - mastH - 120, tx, topY - mastH + 40);
+                bg.addColorStop(0, 'rgba(255,204,0,' + (ba * 0.5) + ')');
+                bg.addColorStop(0.35, 'rgba(0,51,160,' + (ba * 0.5) + ')');
+                bg.addColorStop(0.65, 'rgba(204,0,0,' + (ba * 0.5) + ')');
+                bg.addColorStop(1, 'transparent');
+                ctx.fillStyle = bg;
+                ctx.fillRect(tx - 2, topY - mastH - 120, 4, 160);
+                ctx.restore();
+            }
+        }
+
+        function drawParticles() {
+            for (var i = 0; i < partArr.length; i++) {
+                var p = partArr[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.ph += 0.02;
+                if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+                if (p.x < -10) p.x = W + 10;
+                if (p.x > W + 10) p.x = -10;
+                var a = 0.25 * (0.5 + Math.sin(p.ph) * 0.5);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(96,165,250,' + a + ')';
+                ctx.fill();
+            }
+            for (var i = 0; i < partArr.length; i++) {
+                for (var j = i + 1; j < partArr.length; j++) {
+                    var dx = partArr[i].x - partArr[j].x;
+                    var dy = partArr[i].y - partArr[j].y;
+                    var d = Math.sqrt(dx * dx + dy * dy);
+                    if (d < 70) {
+                        ctx.beginPath();
+                        ctx.moveTo(partArr[i].x, partArr[i].y);
+                        ctx.lineTo(partArr[j].x, partArr[j].y);
+                        ctx.strokeStyle = 'rgba(30,107,255,' + (0.05 * (1 - d / 70)) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function loop(ts) {
+            if (dismissed) return;
+            if (!ts) ts = 0;
+            t = ts / 1000;
+
+            ctx.clearRect(0, 0, W, H);
+
+            var zt = Math.min(1, Math.max(0, (t - 5) / 1.5));
+            var ze = 1 - Math.pow(1 - zt, 3);
+            var sc = 1 + ze * 3;
+
+            ctx.save();
+            if (ze > 0) {
+                ctx.translate(W / 2, H / 2);
+                ctx.scale(sc, sc);
+                ctx.translate(-W / 2, -H / 2);
+            }
+
+            drawSky();
+            drawStars();
+            drawShoot();
+            drawClouds();
+            drawAvila();
+            drawCity();
+            drawFog();
+            drawTower();
+            drawParticles();
+
+            ctx.restore();
+
+            if (zt > 0 && zt < 0.2) {
+                ctx.fillStyle = 'rgba(30,107,255,' + ((zt / 0.2) * 0.12) + ')';
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            if (ze > 0) {
+                ctx.fillStyle = 'rgba(5,8,16,' + (ze * 0.55) + ')';
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            if (t > 5.5) {
+                document.getElementById('splashContent').classList.add('visible');
+            }
+
+            animId = requestAnimationFrame(loop);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                init();
+                animId = requestAnimationFrame(loop);
+            });
+        } else {
+            init();
+            animId = requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('resize', function() {
+            init();
+        });
+
+        document.getElementById('splashCard').addEventListener('click', function() {
+            dismissed = true;
+            if (animId) cancelAnimationFrame(animId);
+            var splash = document.getElementById('splashScreen');
+            splash.classList.add('hidden');
+            setTimeout(function() {
+                splash.style.display = 'none';
+                document.getElementById('loginView').style.display = 'flex';
+                setTimeout(function() {
+                    document.getElementById('loginInfo').classList.add('visible');
+                    document.getElementById('loginCard').classList.add('visible');
+                }, 100);
+            }, 800);
+        });
+
+        // ===== LOGIN =====
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            document.getElementById('loginView').style.display = 'none';
+            document.getElementById('formView').classList.add('active');
+        });
+
+        // ===== FORM NAVIGATION =====
+
+        var currentStep = 1;
+
+        function goToStep(step) {
+            // Hide current
+            document.getElementById('step' + currentStep).classList.remove('active');
+
+            // Update step indicators
+            var steps = document.querySelectorAll('.step');
+            for (var i = 0; i < steps.length; i++) {
+                var s = parseInt(steps[i].getAttribute('data-step'));
+                steps[i].classList.remove('active', 'completed');
+                if (s < step) steps[i].classList.add('completed');
+                if (s === step) steps[i].classList.add('active');
+            }
+
+            currentStep = step;
+            document.getElementById('step' + step).classList.add('active');
+
+            // Build summary on step 5
+            if (step === 5) buildSummary();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function buildSummary() {
+            var html = '';
+            var fields = [
+                { label: 'RIF', id: 'rif' },
+                { label: 'Nombre Comercial', id: 'nombreComercial' },
+                { label: 'Razón Social', id: 'razonSocial' },
+                { label: 'Vertiente', id: 'vertiente' },
+                { label: 'Frecuencia / Canal', id: 'frecuencia' },
+                { label: 'Sitio Web', id: 'sitioWeb' },
+                { label: 'Estado', id: 'estado' },
+                { label: 'Municipio', id: 'municipio' },
+                { label: 'Dirección', id: 'direccion' },
+                { label: 'Representante', id: 'repNombre' },
+                { label: 'Cédula', id: 'repCedula' },
+                { label: 'Cargo', id: 'repCargo' },
+                { label: 'Teléfono', id: 'repTelefono' },
+                { label: 'Email', id: 'repEmail' },
+                { label: 'Operatividad', id: 'operatividad' },
+                { label: 'Licencia', id: 'licencia' },
+                { label: 'Empleados', id: 'numEmpleados' },
+                { label: 'Ingresos', id: 'ingresos' },
+                { label: 'Audiencia', id: 'audiencia' }
+            ];
+
+            html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">';
+            for (var i = 0; i < fields.length; i++) {
+                var el = document.getElementById(fields[i].id);
+                var val = el ? el.value : '';
+                if (!val) val = '<span style="color:var(--text-muted); font-style:italic;">No proporcionado</span>';
+                html += '<div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle); border-radius:12px; padding:12px 16px;">';
+                html += '<div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">' + fields[i].label + '</div>';
+                html += '<div style="font-size:14px; font-weight:600; color:var(--text-primary);">' + val + '</div>';
+                html += '</div>';
+            }
+            html += '</div>';
+
+            var nec = document.getElementById('necesidades');
+            if (nec && nec.value) {
+                html += '<div style="margin-top:16px; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle); border-radius:12px; padding:16px;">';
+                html += '<div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Necesidades / Observaciones</div>';
+                html += '<div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">' + nec.value + '</div>';
+                html += '</div>';
+            }
+
+            document.getElementById('summaryContent').innerHTML = html;
+        }
+
+        function submitForm() {
+            var checked = document.getElementById('declaracion').checked;
+            if (!checked) {
+                alert('Debe aceptar la declaración jurada para enviar el formulario.');
+                return;
+            }
+
+            // Generate reference number
+            var ref = 'ENT-2026-' + String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+            document.getElementById('refNumber').textContent = ref;
+
+            // Show success
+            document.getElementById('formView').classList.remove('active');
+            document.getElementById('successView').classList.add('active');
+        }
+
+        function newForm() {
+            // Reset all inputs
+            var inputs = document.querySelectorAll('.form-input');
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].tagName === 'SELECT') {
+                    inputs[i].selectedIndex = 0;
+                } else {
+                    inputs[i].value = '';
+                }
+            }
+            document.getElementById('declaracion').checked = false;
+
+            // Go to step 1
+            document.getElementById('successView').classList.remove('active');
+            document.getElementById('formView').classList.add('active');
+            goToStep(1);
+        }
+
+    </script>
+
+</body>
+
+</html>
