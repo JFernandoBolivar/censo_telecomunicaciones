@@ -2,32 +2,23 @@
 
 import useSWR from "swr";
 import { fetchUsuariosAction } from "../infrastructure/actions/admin-actions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/components/card";
 import { Skeleton } from "@/shared/ui/components/skeleton";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@/shared/ui/components/empty";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/ui/components/table";
-import { Badge } from "@/shared/ui/components/badge";
+import { motion } from "motion/react";
 
 export function AdminUsuariosPage() {
   const { data, error, isLoading } = useSWR("admin-usuarios", fetchUsuariosAction);
 
   if (isLoading) {
-    return <Skeleton className="h-64 w-full" />;
+    return <Skeleton className="h-64 w-full rounded-2xl bg-[rgba(255,255,255,0.04)]" />;
   }
 
   if (error) {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyTitle>Error al cargar</EmptyTitle>
-          <EmptyDescription>No se pudieron cargar los usuarios.</EmptyDescription>
+          <EmptyTitle className="text-[#f1f5f9]">Error al cargar</EmptyTitle>
+          <EmptyDescription className="text-[#64748b]">No se pudieron cargar los usuarios.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -37,8 +28,8 @@ export function AdminUsuariosPage() {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyTitle>Sin usuarios</EmptyTitle>
-          <EmptyDescription>No hay usuarios registrados aún.</EmptyDescription>
+          <EmptyTitle className="text-[#f1f5f9]">Sin usuarios</EmptyTitle>
+          <EmptyDescription className="text-[#64748b]">No hay usuarios registrados aún.</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -46,41 +37,50 @@ export function AdminUsuariosPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Usuarios Registrados</h1>
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Empresa</TableHead>
-                <TableHead>RIF</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Staff</TableHead>
-                <TableHead>Registro</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+      <h1 className="text-2xl font-extrabold tracking-tight text-[#f1f5f9]">Usuarios Registrados</h1>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card overflow-hidden !rounded-2xl !p-0"
+      >
+        <div className="overflow-x-auto">
+          <table className="data-table w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">Email</th>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">Empresa</th>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">RIF</th>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">Estado</th>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">Staff</th>
+                <th className="bg-[rgba(30,107,255,0.1)] px-5 py-4 text-left text-[11px] font-bold uppercase tracking-[0.5px] text-[#60a5fa] border-b border-[rgba(30,107,255,0.2)] whitespace-nowrap">Registro</th>
+              </tr>
+            </thead>
+            <tbody>
               {data.map((u) => (
-                <TableRow key={u.id}>
-                  <TableCell>{u.email}</TableCell>
-                  <TableCell>{u.nombreEmpresa}</TableCell>
-                  <TableCell className="font-mono text-xs">{u.rifEmpresa}</TableCell>
-                  <TableCell>
-                    <Badge variant={u.isActive ? "default" : "secondary"}>
+                <tr key={u.id} className="border-b border-[rgba(255,255,255,0.06)] transition-all duration-200 hover:bg-[rgba(30,107,255,0.08)]">
+                  <td className="px-5 py-3.5 text-sm text-[#f1f5f9] whitespace-nowrap">{u.email}</td>
+                  <td className="px-5 py-3.5 text-sm text-[#94a3b8] whitespace-nowrap">{u.nombreEmpresa}</td>
+                  <td className="px-5 py-3.5 text-xs font-mono text-[#94a3b8] whitespace-nowrap">{u.rifEmpresa}</td>
+                  <td className="px-5 py-3.5 whitespace-nowrap">
+                    <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold border ${
+                      u.isActive
+                        ? "border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.08)] text-[#22c55e]"
+                        : "border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.08)] text-[#ef4444]"
+                    }`}>
                       {u.isActive ? "Activo" : "Inactivo"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{u.isStaff ? "Sí" : "No"}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-sm text-[#94a3b8] whitespace-nowrap">{u.isStaff ? "Sí" : "No"}</td>
+                  <td className="px-5 py-3.5 text-xs text-[#64748b] whitespace-nowrap">
                     {new Date(u.fechaCreacion).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
     </div>
   );
 }
