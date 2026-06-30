@@ -1,0 +1,32 @@
+services:
+  backend:
+    build:
+      context: ./censo_backend
+      dockerfile: django.dockerfile
+    networks:
+      censo_backend:
+        aliases:
+          - censo_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./censo_backend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+  censo_frontend:
+    build:
+      context: ./censo_frontend
+      dockerfile: next.dockerfile
+    networks:
+      censo_backend:
+        aliases:
+          - censo_frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./censo_frontend/.env
+    restart: always
+networks:
+  censo_backend:
+    driver: bridge
