@@ -133,6 +133,38 @@ class ConsultarRespuestasUsuarioAPIView(APIView):
         )
 
 
+@extend_schema(
+    tags=["Encuestas (Respuestas)"],
+    summary="Listar todas las respuestas agrupadas (Admin)",
+    description="Devuelve una lista de todos los usuarios con sus respuestas limpias y estructuradas.",
+    responses={
+        200: OpenApiResponse(description="Respuestas agrupadas por usuario."),
+        404: OpenApiResponse(description="No hay configuración activa."),
+    },
+)
+class ListarTodasLasRespuestasAPIView(APIView):
+    # permission_classes = [IsAdminUser] # Descomentar cuando haya autenticación completa
+    
+    def get(self, request):
+        config = selectors.obtener_configuracion_activa()
+        if not config:
+            return Response(
+                {"message": "No hay configuración de encuesta activa.", "data": []},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        data = selectors.obtener_todas_las_respuestas_agrupadas(config)
+
+        return Response(
+            {
+                "status": "success",
+                "message": "Respuestas obtenidas correctamente.",
+                "data": data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class ExportarRespuestasExcelAPIView(APIView):
     """
     Exportar respuestas a Excel.

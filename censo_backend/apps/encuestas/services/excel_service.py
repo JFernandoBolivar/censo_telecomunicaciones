@@ -65,6 +65,22 @@ def generar_excel_respuestas(configuracion) -> io.BytesIO:
         for pid in pregunta_ids:
             texto = respuesta_encuesta_map.get((user.id, pid), "")
             if texto:
+                try:
+                    import json
+                    parsed = json.loads(texto)
+                    
+                    if isinstance(parsed, dict):
+                        texto = ", ".join([f"{k.capitalize()}: {v}" for k, v in parsed.items()])
+                    elif isinstance(parsed, list):
+                        items_format = []
+                        for item in parsed:
+                            if isinstance(item, dict):
+                                items_format.append(", ".join([f"{k.capitalize()}: {v}" for k, v in item.items()]))
+                            else:
+                                items_format.append(str(item))
+                        texto = " | ".join(items_format)
+                except Exception:
+                    pass
                 row.append(texto)
             else:
                 opciones_lista = respuesta_opciones_map.get((user.id, pid), [])

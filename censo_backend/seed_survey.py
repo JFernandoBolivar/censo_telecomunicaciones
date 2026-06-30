@@ -116,7 +116,6 @@ def seed_database():
     # Tupla: (fila_excel, codigo, seccion, tipo, JSON_kwargs, requiere_opciones_si_no)
     mapeo_filas = [
         # SECCION 1
-        (8, "1.2", seccion1, "texto", {"regex": r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", "min_chars": 3, "max_chars": 100}, False),
         (9, "1.3", seccion1, "texto", {"regex": r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", "min_chars": 3, "max_chars": 100}, False),
         
         # SECCION 2

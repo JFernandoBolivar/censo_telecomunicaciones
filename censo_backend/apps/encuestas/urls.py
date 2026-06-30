@@ -11,6 +11,11 @@ urlpatterns = [
         name="consultar-respuestas",
     ),
     path(
+        "respuestas/listar/",
+        encuesta_views.ListarTodasLasRespuestasAPIView.as_view(),
+        name="todas-respuestas",
+    ),
+    path(
         "exportar-excel/",
         encuesta_views.ExportarRespuestasExcelAPIView.as_view(),
         name="exportar-excel",
