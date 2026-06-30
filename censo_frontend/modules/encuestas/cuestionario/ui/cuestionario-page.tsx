@@ -29,7 +29,6 @@ export function CuestionarioPage() {
   const form = useForm<RespuestasFormValues>({
     resolver: schema ? zodResolver(schema) : undefined,
     defaultValues: {},
-    shouldUnregister: true,
   });
 
   const yaRespondio = !loadingRespuestas && respuestasExistentes && respuestasExistentes.length > 0;
