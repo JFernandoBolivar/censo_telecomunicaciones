@@ -11,15 +11,15 @@ export function buildRespuestaSchema(preguntas: PreguntaItemDTO[]) {
 
     if (tipo === "seleccion") {
       shape[key] = p.esObligatorio
-        ? z.string().min(1, "Debe seleccionar una opción")
+        ? z.string({ message: "Debe seleccionar una opción" }).min(1, "Debe seleccionar una opción")
         : z.string().optional();
     } else if (tipo === "seleccion multiple") {
       shape[key] = p.esObligatorio
-        ? z.array(z.string())
+        ? z.array(z.string(), { message: "Seleccione al menos una opción" })
         : z.array(z.string()).optional();
     } else if (tipo === "seleccion geografica") {
       shape[key] = p.esObligatorio
-        ? z.string().min(1, "Debe seleccionar una ubicación")
+        ? z.string({ message: "Debe seleccionar una ubicación" }).min(1, "Debe seleccionar una ubicación")
         : z.string().optional();
     } else {
       let s = buildTextSchema(p, v);
@@ -31,7 +31,9 @@ export function buildRespuestaSchema(preguntas: PreguntaItemDTO[]) {
 }
 
 function buildTextSchema(p: PreguntaItemDTO, v: Record<string, unknown> | null): z.ZodTypeAny {
-  let s: z.ZodString = z.string();
+  let s: z.ZodString = p.esObligatorio
+    ? z.string({ message: "Campo requerido" })
+    : z.string();
 
   if (v?.regex && typeof v.regex === "string") {
     try { s = s.regex(new RegExp(v.regex), "Formato inválido"); } catch {}

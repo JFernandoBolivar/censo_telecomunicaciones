@@ -16,16 +16,18 @@ export interface ValidacionVO {
 export function createValidacionVO(data: Record<string, unknown> | null): ValidacionVO | null {
   if (!data) return null;
 
+  const rawDepends = data.dependsOn ?? data.depends_on;
+
   return {
     codigo: typeof data.codigo === "string" ? data.codigo : undefined,
     regex: typeof data.regex === "string" ? data.regex : undefined,
     minChars: typeof data.minChars === "number" ? data.minChars : undefined,
     maxChars: typeof data.maxChars === "number" ? data.maxChars : undefined,
     widget: typeof data.widget === "string" ? data.widget : null,
-    dependsOn: data.dependsOn && typeof data.dependsOn === "object"
+    dependsOn: rawDepends && typeof rawDepends === "object"
       ? {
-          parentQuestionCode: String((data.dependsOn as Record<string, unknown>).parentQuestionCode),
-          expectedValue: String((data.dependsOn as Record<string, unknown>).expectedValue),
+          parentQuestionCode: String((rawDepends as Record<string, unknown>).parentQuestionCode ?? (rawDepends as Record<string, unknown>).parent_question_code),
+          expectedValue: String((rawDepends as Record<string, unknown>).expectedValue ?? (rawDepends as Record<string, unknown>).expected_value),
           actionIfFalse: "hide",
         }
       : null,
