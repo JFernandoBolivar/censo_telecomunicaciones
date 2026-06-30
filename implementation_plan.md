@@ -55,3 +55,42 @@ A continuación, se lista **cada una de las preguntas** identificadas en el arch
 
 > [!NOTE]
 > Las sub-preguntas (como "2.1.5.1 Entidades Federales", "2.1.5.2 Municipios", "2.1.5.3 Parroquias") fueron agrupadas bajo la pregunta principal "2.1.5 ¿Cuáles son las zonas de interés...?" con el tipo `Selección Geográfica`, ya que en la base de datos se guarda un solo conjunto de datos geográficos para toda la pregunta.
+
+---
+
+## Estructura JSON Avanzada (Para el Frontend)
+
+Para comunicarle al frontend la lógica de negocio (como ocultar preguntas dependiendo de una respuesta anterior o renderizar un componente específico de geografía), utilizaremos el campo `validacion` (JSONField) que ya existe en el modelo `PreguntaPersonalizada`.
+
+### 1. Lógica Condicional (Ocultar/Mostrar Preguntas)
+Para preguntas que dependen de una respuesta previa (como la 2.3.1 que depende de que la 2.3 sea "SI"), podemos agregar un atributo `depends_on` al JSON de la pregunta hija (2.3.1).
+
+**Ejemplo para la pregunta 2.3.1 (depende de la 2.3):**
+```json
+{
+  "regex": "^[\\w\\s\\.,\\-ñÑáéíóúÁÉÍÓÚ]+$",
+  "min_chars": 0,
+  "max_chars": 2000,
+  "depends_on": {
+    "parent_question_code": "2.3",
+    "expected_value": "SI",
+    "action_if_false": "hide"
+  }
+}
+```
+**¿Cómo lo lee el frontend?** El frontend al renderizar la pregunta 2.3.1 lee `depends_on`. Se suscribe al estado de la pregunta "2.3" y si la respuesta no es "SI", ejecuta el `action_if_false` (es decir, la oculta visualmente y no la envía en el payload).
+
+### 2. Componentes Especiales (Zonas Geográficas)
+Para las preguntas 2.1.5 y 2.2.3, el frontend necesita saber que no debe renderizar un input de texto normal, sino los dropdowns en cascada (Estado > Municipio > Parroquia) que consumen los endpoints de `geography`.
+
+**Ejemplo para la pregunta 2.1.5:**
+```json
+{
+  "regex": "^\\d+(,\\d+)*$",
+  "min_chars": 0,
+  "max_chars": 1000,
+  "widget": "geography_cascade",
+  "data_source": "/api/geography/direccion/"
+}
+```
+**¿Cómo lo lee el frontend?** Al ver que `widget` es `"geography_cascade"`, el frontend renderiza el componente Vue/React correspondiente a los 3 selects geográficos.
