@@ -26,6 +26,7 @@ def obtener_preguntas_con_respuestas(configuracion):
 
 import json
 from apps.encuestas.models.models_encuestas import UsuarioPermiso
+from apps.geography.models import Estado, Municipio, Parroquia
 
 def obtener_todas_las_respuestas_agrupadas(configuracion):
     """
@@ -48,6 +49,27 @@ def obtener_todas_las_respuestas_agrupadas(configuracion):
         .order_by("usuario__id")
     )
     
+    # Precargar nombres de geografía
+    all_geo_ids = {"estado": set(), "municipio": set(), "parroquia": set()}
+    for permiso in permisos:
+        if permiso.pregunta_personalizada.tipo_pregunta.nombre == "seleccion geografica":
+            for t in permiso.respuestaencuesta_set.all():
+                raw = t.respuesta.strip()
+                try:
+                    data = json.loads(raw)
+                    items = data if isinstance(data, list) else [data]
+                    for item in items:
+                        if isinstance(item, dict):
+                            if "estadoId" in item: all_geo_ids["estado"].add(item["estadoId"])
+                            if "municipioId" in item: all_geo_ids["municipio"].add(item["municipioId"])
+                            if "parroquiaId" in item: all_geo_ids["parroquia"].add(item["parroquiaId"])
+                except json.JSONDecodeError:
+                    pass
+
+    estado_nombres = {e.id: e.estado for e in Estado.objects.filter(id__in=all_geo_ids["estado"])}
+    municipio_nombres = {m.id: m.municipio for m in Municipio.objects.filter(id__in=all_geo_ids["municipio"])}
+    parroquia_nombres = {p.id: p.parroquia for p in Parroquia.objects.filter(id__in=all_geo_ids["parroquia"])}
+    
     usuarios_map = {}
     respuestas_map = {}
     
@@ -69,25 +91,39 @@ def obtener_todas_las_respuestas_agrupadas(configuracion):
         
         valor = None
         if textos:
-            # Si hay múltiples textos, recolectamos todos (para zonas geográficas)
             if pregunta.tipo_pregunta.nombre == "seleccion geografica":
-                parsed_list = []
+                raw_list = []
                 for t in textos:
                     raw_text = t.respuesta.strip()
-                    # Intento reparar JSON mal concatenado como {"a":"b"}{"c":"d"} si ocurre
                     if "}{" in raw_text:
                         raw_text = raw_text.replace("}{", "},{")
                         raw_text = f"[{raw_text}]"
-                    
                     try:
                         parsed = json.loads(raw_text)
                         if isinstance(parsed, list):
-                            parsed_list.extend(parsed)
+                            raw_list.extend(parsed)
                         else:
-                            parsed_list.append(parsed)
+                            raw_list.append(parsed)
                     except Exception:
-                        parsed_list.append(t.respuesta)
-                valor = parsed_list if len(parsed_list) > 1 else (parsed_list[0] if parsed_list else None)
+                        pass
+
+                resolved_list = []
+                for item in raw_list:
+                    resolved = {}
+                    if isinstance(item, dict):
+                        eid = item.get("estadoId")
+                        mid = item.get("municipioId")
+                        pid = item.get("parroquiaId")
+                        if eid:
+                            resolved["estado"] = estado_nombres.get(eid, str(eid))
+                        if mid:
+                            resolved["municipio"] = municipio_nombres.get(mid, str(mid))
+                        if pid:
+                            resolved["parroquia"] = parroquia_nombres.get(pid, str(pid))
+                    if resolved:
+                        resolved_list.append(resolved)
+
+                valor = resolved_list[0] if len(resolved_list) == 1 else (resolved_list if resolved_list else None)
             else:
                 valor = textos[0].respuesta
                 

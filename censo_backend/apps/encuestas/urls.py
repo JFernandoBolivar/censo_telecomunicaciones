@@ -5,11 +5,11 @@ app_name = "apps.encuestas"
 urlpatterns = [
     path("preguntas/", encuesta_views.ListarPreguntasEncuestaAPIView.as_view(), name="listar-preguntas"),
     path("respuestas/", encuesta_views.RegistrarRespuestasAPIView.as_view(), name="registrar-respuestas"),
-    path(
-        "respuestas/consultar/",
-        encuesta_views.ConsultarRespuestasUsuarioAPIView.as_view(),
-        name="consultar-respuestas",
-    ),
+    # path(
+    #     "respuestas/consultar/",
+    #     encuesta_views.ConsultarRespuestasUsuarioAPIView.as_view(),
+    #     name="consultar-respuestas",
+    # ),
     path(
         "respuestas/listar/",
         encuesta_views.ListarTodasLasRespuestasAPIView.as_view(),

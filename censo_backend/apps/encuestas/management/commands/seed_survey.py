@@ -16,7 +16,7 @@ class Command(BaseCommand):
     help = "Puebla la base de datos censo desde el archivo Excel de la encuesta"
 
     def handle(self, *args, **options):
-        excel_path = "/home/jbolivar/Documentos/sistemas/encuestas/Encuesta Infraestructura-VGT_29062026.xlsx"
+        excel_path = "/home/hmachado/Documentos/censo_telecomunicaciones/Encuesta Infraestructura-VGT_29062026.xlsx"
         
         self.stdout.write("Borrando datos anteriores de la encuesta...")
         PreguntaOpciones.objects.all().delete()

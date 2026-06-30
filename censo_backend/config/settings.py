@@ -92,7 +92,7 @@ DATABASES = {
     # Base de datos principal del sistema de encuestas (lectura/escritura)
     "default": {
         "ENGINE":   "django.db.backends.postgresql",
-        "NAME":     os.environ.get("CENSO_DB_NAME",     "censo"),
+        "NAME":     os.environ.get("CENSO_DB_NAME",     "censo2"),
         "USER":     os.environ.get("CENSO_DB_USER",     "postgres"),
         "PASSWORD": os.environ.get("CENSO_DB_PASSWORD", "postgres"),
         "HOST":     os.environ.get("CENSO_DB_HOST",     "localhost"),
